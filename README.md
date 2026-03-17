@@ -120,7 +120,7 @@ See our MCP-specific data policy: [stayker.com/legal/mcp-policy](https://stayker
 
 ## Support
 
-- **Chat:** [https://stayker.com/support]
+- **Chat:** [https://stayker.com/service]
 - **Issues:** [github.com/STAYKER-COM/1stay-mcp/issues](https://github.com/STAYKER-COM/1stay-mcp/issues)
 - **Documentation:** [1stay.ai](https://1stay.ai)
 
