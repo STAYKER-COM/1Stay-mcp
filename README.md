@@ -120,13 +120,13 @@ See our MCP-specific data policy: [stayker.com/legal/mcp-policy](https://stayker
 
 ## Support
 
-- **Email:** support@stayker.com
+- **Chat:** [https://stayker.com/support]
 - **Issues:** [github.com/STAYKER-COM/1stay-mcp/issues](https://github.com/STAYKER-COM/1stay-mcp/issues)
 - **Documentation:** [1stay.ai](https://1stay.ai)
 
 ## About Stayker
 
-Stayker is a travel technology company that powers hotel reservations for events, organizations, and brands. Our platform connects directly to travel distribution networks — no middlemen, no markups, no affiliate redirects. Hotels are the merchant of record on every booking.
+Stayker is a travel technology company that has powered hotel reservations for events, organizations, and brands. No hotel contracts, no rooming lists. Live worldwide inventory. Our platform connects directly to travel distribution networks — no middlemen, no markups, no affiliate redirects. Hotels are the merchant of record on every booking.
 
 **Founded:** 2020 | **Industry experience:** 40+ years | **Headquarters:** Charlotte, NC
 
