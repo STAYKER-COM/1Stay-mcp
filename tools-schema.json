@@ -1,0 +1,215 @@
+{
+  "server": {
+    "name": "1Stay Hotels",
+    "version": "1.0.0",
+    "description": "Real-time hotel search and booking via MCP. The first MCP server that completes real hotel reservations inside AI conversations.",
+    "endpoint": "https://mcp.stayker.com/mcp",
+    "transport": "streamable-http",
+    "protocol_version": "2025-11-25",
+    "supported_versions": [
+      "2025-11-25",
+      "2025-06-18",
+      "2025-03-26",
+      "2024-11-05",
+      "2024-10-07"
+    ]
+  },
+  "tools": [
+    {
+      "name": "search_hotels",
+      "description": "Search for available hotels by location, dates, and number of guests. Returns a list of properties with nightly rates, star ratings, and distance from search center. Supports optional filters for price range, star rating, and amenities. For best results with neighborhood-specific searches, use latitude/longitude coordinates with a tight radius rather than location strings.",
+      "annotations": {
+        "title": "Search Hotels",
+        "readOnlyHint": true,
+        "destructiveHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "City name or address to search near (e.g., 'Charlotte, NC' or 'Las Vegas Strip')"
+          },
+          "latitude": {
+            "type": "number",
+            "description": "Latitude coordinate for location-based search"
+          },
+          "longitude": {
+            "type": "number",
+            "description": "Longitude coordinate for location-based search"
+          },
+          "radius": {
+            "type": "number",
+            "description": "Search radius in miles from coordinates (default: 10)"
+          },
+          "check_in": {
+            "type": "string",
+            "description": "Check-in date in YYYY-MM-DD format"
+          },
+          "check_out": {
+            "type": "string",
+            "description": "Check-out date in YYYY-MM-DD format"
+          },
+          "guests": {
+            "type": "integer",
+            "description": "Number of guests per room"
+          },
+          "rooms": {
+            "type": "integer",
+            "description": "Number of rooms needed (default: 1)"
+          }
+        },
+        "required": ["check_in", "check_out", "guests"]
+      }
+    },
+    {
+      "name": "get_hotel_details",
+      "description": "Get detailed information about a specific hotel including room types, live rates, amenities, cancellation policies, and property images. Requires a hotel_id from search results. Rate quotes are valid for approximately 15 minutes.",
+      "annotations": {
+        "title": "Get Hotel Details",
+        "readOnlyHint": true,
+        "destructiveHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "hotel_id": {
+            "type": "string",
+            "description": "Hotel identifier from search results"
+          },
+          "check_in": {
+            "type": "string",
+            "description": "Check-in date in YYYY-MM-DD format"
+          },
+          "check_out": {
+            "type": "string",
+            "description": "Check-out date in YYYY-MM-DD format"
+          },
+          "guests": {
+            "type": "integer",
+            "description": "Number of guests per room"
+          }
+        },
+        "required": ["hotel_id", "check_in", "check_out", "guests"]
+      }
+    },
+    {
+      "name": "book_hotel",
+      "description": "Create a hotel reservation and receive a secure checkout URL to complete payment. Payment and credit card information are handled on the secure checkout page — never in the AI conversation. The checkout session is valid for approximately 30 minutes.",
+      "annotations": {
+        "title": "Book Hotel",
+        "readOnlyHint": false,
+        "destructiveHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "hotel_id": {
+            "type": "string",
+            "description": "Hotel identifier from search or details results"
+          },
+          "rate_code": {
+            "type": "string",
+            "description": "Rate code from hotel details results"
+          },
+          "check_in": {
+            "type": "string",
+            "description": "Check-in date in YYYY-MM-DD format"
+          },
+          "check_out": {
+            "type": "string",
+            "description": "Check-out date in YYYY-MM-DD format"
+          },
+          "guests": {
+            "type": "integer",
+            "description": "Number of guests"
+          },
+          "guest_name": {
+            "type": "string",
+            "description": "Full name of the primary guest"
+          },
+          "guest_email": {
+            "type": "string",
+            "description": "Email address for booking confirmation"
+          },
+          "guest_phone": {
+            "type": "string",
+            "description": "Phone number with country code (e.g., +1-555-123-4567)"
+          },
+          "sms_opt_in": {
+            "type": "boolean",
+            "description": "Opt in to receive post-booking SMS updates (default: false)"
+          }
+        },
+        "required": [
+          "hotel_id",
+          "rate_code",
+          "check_in",
+          "check_out",
+          "guests",
+          "guest_name",
+          "guest_email",
+          "guest_phone",
+          "sms_opt_in"
+        ]
+      }
+    },
+    {
+      "name": "get_booking",
+      "description": "Look up an existing reservation by booking ID (stk_bk_xxxx format) or hotel confirmation number. Returns reservation details including hotel name, dates, rate, and current status.",
+      "annotations": {
+        "title": "Get Booking",
+        "readOnlyHint": true,
+        "destructiveHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "booking_id": {
+            "type": "string",
+            "description": "Stayker booking ID (stk_bk_xxxx) or hotel confirmation number"
+          }
+        },
+        "required": ["booking_id"]
+      }
+    },
+    {
+      "name": "cancel_booking",
+      "description": "Cancel an existing hotel reservation. Returns cancellation confirmation and any applicable cancellation policy details. This action cannot be undone.",
+      "annotations": {
+        "title": "Cancel Booking",
+        "readOnlyHint": false,
+        "destructiveHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "booking_id": {
+            "type": "string",
+            "description": "Stayker booking ID (stk_bk_xxxx) or hotel confirmation number"
+          }
+        },
+        "required": ["booking_id"]
+      }
+    },
+    {
+      "name": "retrieve_booking",
+      "description": "Find a reservation and resend the confirmation email to the guest's email address on file.",
+      "annotations": {
+        "title": "Retrieve Booking",
+        "readOnlyHint": true,
+        "destructiveHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "booking_id": {
+            "type": "string",
+            "description": "Stayker booking ID (stk_bk_xxxx) or hotel confirmation number"
+          }
+        },
+        "required": ["booking_id"]
+      }
+    }
+  ]
+}
