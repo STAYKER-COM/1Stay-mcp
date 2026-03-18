@@ -1,0 +1,9 @@
+{
+  "name": "1stay-mcp-tests",
+  "private": true,
+  "description": "Test suite for 1Stay MCP schema and documentation",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "test:integration": "node --test tests/integration/*.test.js"
+  }
+}
