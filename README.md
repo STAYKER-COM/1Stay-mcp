@@ -5,6 +5,7 @@ The first MCP server that completes real hotel reservations inside AI conversati
 Built by [Stayker](https://stayker.com) (WPF Holdings, LLC), a licensed travel technology company with 40 years of industry experience operating through established travel distribution networks. When you book through 1Stay, the hotel is the merchant of record — your stay is treated exactly like a direct booking.
 
 [![1StayHotel Booking MCP server](https://glama.ai/mcp/servers/STAYKER-COM/1Stay-mcp/badges/card.svg)](https://glama.ai/mcp/servers/STAYKER-COM/1Stay-mcp)
+[![1Stay-mcp MCP server](https://glama.ai/mcp/servers/STAYKER-COM/1Stay-mcp/badges/score.svg)](https://glama.ai/mcp/servers/STAYKER-COM/1Stay-mcp)
 
 **MCP Endpoint:** `https://mcp.stayker.com/mcp`  
 **Protocol:** Streamable HTTP | MCP SDK v1.27.1 | Latest protocol version `2025-11-25`  
