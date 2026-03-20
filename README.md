@@ -69,7 +69,7 @@ claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
 
 ### Example 2: Get details and book a room
 
-**User prompt:** "Show me room options at the Hilton from those results, then book the king room."
+**User prompt:** "Show me room options from those results, then book the king room."
 
 **What happens:**
 - 1Stay retrieves live room types, rates, cancellation policies, and property amenities
