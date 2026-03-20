@@ -17,30 +17,31 @@
   "tools": [
     {
       "name": "search_hotels",
-      "description": "Search for available hotels by location, dates, and number of guests. Returns a list of properties with nightly rates, star ratings, and distance from search center. Supports optional filters for price range, star rating, and amenities. For best results with neighborhood-specific searches, use latitude/longitude coordinates with a tight radius rather than location strings.",
+      "description": "Search hotels worldwide by location and dates. All hotel types: major brands (Marriott, Hilton, IHG, Hyatt, Wyndham, Best Western, Choice), boutique, and independent properties. Guests pay the hotel directly. Loyalty points always apply. Hotel's own confirmation number.",
       "annotations": {
         "title": "Search Hotels",
         "readOnlyHint": true,
-        "destructiveHint": false
+        "destructiveHint": false,
+        "openWorldHint": true
       },
       "inputSchema": {
         "type": "object",
         "properties": {
           "location": {
             "type": "string",
-            "description": "City name or address to search near (e.g., 'Charlotte, NC' or 'Las Vegas Strip')"
+            "description": "City, address, venue, or landmark. Required unless latitude/longitude provided."
           },
           "latitude": {
             "type": "number",
-            "description": "Latitude coordinate for location-based search"
+            "description": "Latitude — skip geocoding if provided with longitude"
           },
           "longitude": {
             "type": "number",
-            "description": "Longitude coordinate for location-based search"
+            "description": "Longitude — skip geocoding if provided with latitude"
           },
           "radius": {
-            "type": "number",
-            "description": "Search radius in miles from coordinates (default: 10)"
+            "type": "integer",
+            "description": "Search radius in miles (default 25, max 100)"
           },
           "check_in": {
             "type": "string",
@@ -50,32 +51,53 @@
             "type": "string",
             "description": "Check-out date in YYYY-MM-DD format"
           },
-          "guests": {
+          "guests_per_room": {
             "type": "integer",
-            "description": "Number of guests per room"
+            "description": "Guests per room (default 2)"
           },
           "rooms": {
             "type": "integer",
-            "description": "Number of rooms needed (default: 1)"
+            "description": "Number of rooms (default 1)"
+          },
+          "chain_code": {
+            "type": "string",
+            "description": "Filter by hotel chain code (e.g. 'MC' for Marriott, 'HH' for Hilton)"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency code (default USD)"
+          },
+          "max_results": {
+            "type": "integer",
+            "description": "Max hotels to return, max 15 (default 10)"
+          },
+          "search_id": {
+            "type": "string",
+            "description": "Search ID from previous results — pass with cursor for next page"
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Pagination cursor from previous search response"
           }
         },
-        "required": ["check_in", "check_out", "guests"]
+        "required": ["check_in", "check_out"]
       }
     },
     {
       "name": "get_hotel_details",
-      "description": "Get detailed information about a specific hotel including room types, live rates, amenities, cancellation policies, and property images. Requires a hotel_id from search results. Rate quotes are valid for approximately 15 minutes.",
+      "description": "Get room types, live rates, amenities, cancellation policies, and rate_codes for a specific hotel. Required before booking — rate_codes expire in ~15 minutes. Guests pay the hotel directly. A 1Stay Booking Fee is added at checkout.",
       "annotations": {
-        "title": "Get Hotel Details",
+        "title": "Hotel Details",
         "readOnlyHint": true,
-        "destructiveHint": false
+        "destructiveHint": false,
+        "openWorldHint": true
       },
       "inputSchema": {
         "type": "object",
         "properties": {
           "hotel_id": {
             "type": "string",
-            "description": "Hotel identifier from search results"
+            "description": "Hotel ID from search results"
           },
           "check_in": {
             "type": "string",
@@ -87,30 +109,36 @@
           },
           "guests": {
             "type": "integer",
-            "description": "Number of guests per room"
+            "description": "Number of guests (default 2)"
+          },
+          "rooms": {
+            "type": "integer",
+            "description": "Number of rooms (default 1)"
           }
         },
-        "required": ["hotel_id", "check_in", "check_out", "guests"]
+        "required": ["hotel_id", "check_in", "check_out"]
       }
     },
     {
       "name": "book_hotel",
-      "description": "Create a hotel reservation and receive a secure checkout URL to complete payment. Payment and credit card information are handled on the secure checkout page — never in the AI conversation. The checkout session is valid for approximately 30 minutes.",
+      "description": "Book a hotel room. Returns a secure checkout URL — guest completes payment there. NEVER collect credit card numbers, payment info, or billing details in conversation. Guest pays the hotel directly. Hotel's own confirmation number. Loyalty points apply automatically. Requires rate_code from get_hotel_details (expires ~15 min).",
       "annotations": {
         "title": "Book Hotel",
         "readOnlyHint": false,
-        "destructiveHint": true
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
       },
       "inputSchema": {
         "type": "object",
         "properties": {
           "hotel_id": {
             "type": "string",
-            "description": "Hotel identifier from search or details results"
+            "description": "Hotel ID from search or details results"
           },
           "rate_code": {
             "type": "string",
-            "description": "Rate code from hotel details results"
+            "description": "Rate code from get_hotel_details — you MUST call get_hotel_details first to get a valid rate_code before booking"
           },
           "check_in": {
             "type": "string",
@@ -132,13 +160,9 @@
             "type": "string",
             "description": "Email address for booking confirmation"
           },
-          "guest_phone": {
+          "external_reference_id": {
             "type": "string",
-            "description": "Phone number with country code (e.g., +1-555-123-4567)"
-          },
-          "sms_opt_in": {
-            "type": "boolean",
-            "description": "Opt in to receive post-booking SMS updates (default: false)"
+            "description": "Your unique reference ID for this booking (for idempotency and retrieval)"
           }
         },
         "required": [
@@ -148,26 +172,25 @@
           "check_out",
           "guests",
           "guest_name",
-          "guest_email",
-          "guest_phone",
-          "sms_opt_in"
+          "guest_email"
         ]
       }
     },
     {
       "name": "get_booking",
-      "description": "Look up an existing reservation by booking ID (stk_bk_xxxx format) or hotel confirmation number. Returns reservation details including hotel name, dates, rate, and current status.",
+      "description": "Look up a reservation by booking ID (stk_bk_xxxx) or hotel confirmation number. Returns full booking details including hotel, dates, guest info, rate, and status. Scoped to bookings made through your API key. For guest-facing reservation lookups, use retrieve_booking which enforces identity verification.",
       "annotations": {
         "title": "Get Booking",
         "readOnlyHint": true,
-        "destructiveHint": false
+        "destructiveHint": false,
+        "openWorldHint": false
       },
       "inputSchema": {
         "type": "object",
         "properties": {
           "booking_id": {
             "type": "string",
-            "description": "Stayker booking ID (stk_bk_xxxx) or hotel confirmation number"
+            "description": "Booking ID (e.g. stk_bk_xxxx) or hotel confirmation number"
           }
         },
         "required": ["booking_id"]
@@ -175,40 +198,95 @@
     },
     {
       "name": "cancel_booking",
-      "description": "Cancel an existing hotel reservation. Returns cancellation confirmation and any applicable cancellation policy details. This action cannot be undone.",
+      "description": "Cancel a hotel reservation. Cannot be undone. Requires guest first and last name plus hotel confirmation number. Always confirm with the guest before proceeding. Cancellation confirmation is emailed to the address on file.",
       "annotations": {
         "title": "Cancel Booking",
         "readOnlyHint": false,
-        "destructiveHint": true
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
       },
       "inputSchema": {
         "type": "object",
         "properties": {
-          "booking_id": {
+          "first_name": {
             "type": "string",
-            "description": "Stayker booking ID (stk_bk_xxxx) or hotel confirmation number"
+            "description": "Guest first name on the reservation"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Guest last name on the reservation"
+          },
+          "confirmation_number": {
+            "type": "string",
+            "description": "Hotel confirmation number"
           }
         },
-        "required": ["booking_id"]
+        "required": ["first_name", "last_name", "confirmation_number"]
       }
     },
     {
       "name": "retrieve_booking",
-      "description": "Find a reservation and resend the confirmation email to the guest's email address on file.",
+      "description": "Find a reservation and resend the confirmation email. Requires identity verification: guest's first and last name plus at least one verification factor (email address used at booking, hotel confirmation number, or last four digits of card used). Does not return booking details in conversation — confirmation is sent to the email on file to protect guest privacy.",
       "annotations": {
         "title": "Retrieve Booking",
         "readOnlyHint": true,
-        "destructiveHint": false
+        "destructiveHint": false,
+        "openWorldHint": false
       },
       "inputSchema": {
         "type": "object",
         "properties": {
-          "booking_id": {
+          "first_name": {
             "type": "string",
-            "description": "Stayker booking ID (stk_bk_xxxx) or hotel confirmation number"
+            "description": "Guest's first name"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Guest's last name"
+          },
+          "confirmation_number": {
+            "type": "string",
+            "description": "Hotel confirmation number (optional verification factor)"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address used when booking (optional verification factor)"
+          },
+          "last_four_card": {
+            "type": "string",
+            "description": "Last 4 digits of card used to book (must also provide check_in_date)"
+          },
+          "check_in_date": {
+            "type": "string",
+            "description": "Check-in date in YYYY-MM-DD format (required when using last_four_card verification)"
+          },
+          "updated_email": {
+            "type": "string",
+            "description": "Resend confirmation to a different email address"
           }
         },
-        "required": ["booking_id"]
+        "required": ["first_name", "last_name"]
+      }
+    },
+    {
+      "name": "search_tools",
+      "description": "List available 1Stay hotel booking tools. Filter by keyword: search, book, cancel, details. Omit keyword to list all tools.",
+      "annotations": {
+        "title": "Search Tools",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "keyword": {
+            "type": "string",
+            "description": "Keyword to filter tools (e.g. 'book', 'search', 'cancel'). Omit to list all tools."
+          }
+        },
+        "required": []
       }
     }
   ]
