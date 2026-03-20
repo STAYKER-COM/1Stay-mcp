@@ -16,8 +16,6 @@ Built by [Stayker](https://stayker.com) (WPF Holdings, LLC), a licensed travel t
 - **Live rate quotes** with negotiated, loyalty-eligible pricing
 - **In-conversation booking** that returns a secure checkout URL — payment and PII never touch the AI layer
 - **Post-booking management** — retrieve confirmations, resend emails, cancel reservations
-- **Event-aware inventory** — purpose-built for tournaments, weddings, conferences, and group travel
-- **SMS concierge** (opt-in) — post-booking updates and itinerary support via text
 
 ## Tools
 
@@ -26,7 +24,7 @@ Built by [Stayker](https://stayker.com) (WPF Holdings, LLC), a licensed travel t
 | `search_hotels` | Search hotels by location, dates, guests, and optional filters | `readOnlyHint: true` |
 | `get_hotel_details` | Get room types, amenities, images, and live rates for a specific property | `readOnlyHint: true` |
 | `book_hotel` | Create a reservation and receive a secure checkout URL | `destructiveHint: true` |
-| `get_booking` | Look up a reservation by booking ID or hotel confirmation number | `readOnlyHint: true` |
+| `get_booking` | Look up a reservation by confirmation number | `readOnlyHint: true` |
 | `cancel_booking` | Cancel an existing reservation | `destructiveHint: true` |
 | `retrieve_booking` | Find a reservation and resend the confirmation email | `readOnlyHint: true` |
 
@@ -81,23 +79,13 @@ claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
 
 ### Example 3: Look up and manage an existing reservation
 
-**User prompt:** "Can you pull up my booking for Charlotte and resend the confirmation email?"
+**User prompt:** "Can you pull up my reservation and resend the confirmation email?"
 
 **What happens:**
-- 1Stay locates the reservation using the booking ID or guest information
+- 1Stay locates the reservation using the confirmation number or guest information
 - Displays reservation details including hotel name, dates, rate, and confirmation number
 - Resends the confirmation email to the address on file
 - If needed, the user can request cancellation directly in conversation
-
-### Example 4: Event-based group search
-
-**User prompt:** "My son's baseball team has a tournament in Las Vegas July 12-15. Find hotels near the Las Vegas Ballpark for 8 families."
-
-**What happens:**
-- 1Stay searches properties near the venue with availability for the tournament dates
-- Returns options suitable for families with pricing for the full stay
-- Each family can book individually through their own secure checkout link
-- No group block required — no cutoff dates, no minimum room commitments
 
 ## How Booking Works
 
@@ -106,13 +94,19 @@ claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
 1. **Search and select** happen inside the AI conversation
 2. **Guest details** (name, email, phone) are collected in conversation to create the reservation
 3. **Payment** is completed on a secure, PCI-compliant checkout page — outside the AI layer
-4. **Confirmation** is delivered via email (and SMS if opted in)
+4. **Confirmation** is delivered via email with your hotel confirmation number
 
-Credit card and payment information never pass through the AI conversation. The checkout URL is valid for approximately 30 minutes.
+Credit card and payment information never passes through the AI conversation. The checkout URL is valid for approximately 30 minutes.
 
 ## Pricing
 
-1Stay is a commercial service. A non-refundable booking service fee applies to each completed reservation. Developer API access is available via monthly subscription with metered usage. Full pricing details are available at [1stay.ai](https://1stay.ai).
+1Stay is a commercial service. A non-refundable booking service fee applies to each completed reservation. Developer API access is available via a monthly subscription with metered usage. Full pricing details are available at [1stay.ai](https://1stay.ai).
+
+## Coming Soon
+
+- **Event-aware inventory** — search and book around tournaments, weddings, and conferences with venue-based search and organizer tools
+- **SMS concierge** — opt-in post-booking updates and itinerary support via text
+- **Multi-room coordination** — group booking tools for teams, families, and event attendees
 
 ## Privacy Policy
 
@@ -122,7 +116,7 @@ See our MCP-specific data policy: [stayker.com/legal/mcp-policy](https://stayker
 
 ## Support
 
-- **Chat:** [https://stayker.com/service]
+- **Chat:** [https://stayker.com/service](https://stayker.com/service)
 - **Issues:** [github.com/STAYKER-COM/1stay-mcp/issues](https://github.com/STAYKER-COM/1stay-mcp/issues)
 - **Documentation:** [1stay.ai](https://1stay.ai)
 
@@ -130,7 +124,7 @@ See our MCP-specific data policy: [stayker.com/legal/mcp-policy](https://stayker
 
 Stayker is a travel technology company that has powered hotel reservations for events, organizations, and brands. No hotel contracts, no rooming lists. Live worldwide inventory. Our platform connects directly to travel distribution networks — no middlemen, no markups, no affiliate redirects. Hotels are the merchant of record on every booking.
 
-**Founded:** 2020 | **Industry experience:** 40+ years | **Headquarters:** Charlotte, NC
+**Founded:** 2019 | **Industry experience:** 40+ years | **Headquarters:** Charlotte, NC
 
 *Build. Book. Connect.*
 
