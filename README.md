@@ -122,6 +122,22 @@ See our MCP-specific data policy: [stayker.com/legal/mcp-policy](https://stayker
 - **Issues:** [github.com/STAYKER-COM/1stay-mcp/issues](https://github.com/STAYKER-COM/1stay-mcp/issues)
 - **Documentation:** [1stay.ai](https://1stay.ai)
 
+## Which integrations are available for this server?
+
+The following integrations are available for this server:
+
+- **Global hotel inventory** — 250,000+ properties across 140+ countries including all major chains, independent, and boutique hotels
+- **Loyalty programs** — all major hotel loyalty programs are eligible (points accrue, elite status applies)
+- **Live rates & availability** — real-time pricing, not cached or scraped
+- **Secure checkout** — PCI-compliant hosted checkout page; no payment data in the AI conversation
+- **Stripe Connect** — developers set their own booking service fee (1Stay is not the merchant of record on hotel stays)
+
+1Stay is not a direct integration with any single hotel chain. It is distribution infrastructure — hotels are the merchant of record on every transaction.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a record of all API and documentation changes.
+
 ## About Stayker
 
 Stayker is a travel technology company that has powered hotel reservations for events, organizations, and brands. No hotel contracts, no rooming lists. Live worldwide inventory. Our platform connects directly to travel distribution networks — no middlemen, no markups, no affiliate redirects. Hotels are the merchant of record on every booking.
