@@ -28,6 +28,7 @@ Built by [Stayker](https://stayker.com) (WPF Holdings, LLC), a licensed travel t
 | `get_booking` | Look up a reservation by confirmation number | `readOnlyHint: true` |
 | `cancel_booking` | Cancel an existing reservation | `destructiveHint: true` |
 | `retrieve_booking` | Find a reservation and resend the confirmation email | `readOnlyHint: true` |
+| `search_tools` | List available 1Stay tools, optionally filtered by keyword | `readOnlyHint: true` |
 
 ## Setup
 

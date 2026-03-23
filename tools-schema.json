@@ -125,7 +125,7 @@
       "annotations": {
         "title": "Book Hotel",
         "readOnlyHint": false,
-        "destructiveHint": false,
+        "destructiveHint": true,
         "idempotentHint": true,
         "openWorldHint": true
       },
@@ -160,6 +160,10 @@
             "type": "string",
             "description": "Email address for booking confirmation"
           },
+          "guest_phone": {
+            "type": "string",
+            "description": "Phone number for the primary guest"
+          },
           "external_reference_id": {
             "type": "string",
             "description": "Your unique reference ID for this booking (for idempotency and retrieval)"
@@ -172,7 +176,8 @@
           "check_out",
           "guests",
           "guest_name",
-          "guest_email"
+          "guest_email",
+          "guest_phone"
         ]
       }
     },
