@@ -1,0 +1,11 @@
+.git
+.gitignore
+tests/
+node_modules/
+*.md
+LICENSE
+glama.json
+tools-schema.json
+claude_desktop_config.example.json
+package.json
+package-lock.json
