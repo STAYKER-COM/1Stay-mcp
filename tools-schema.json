@@ -17,7 +17,7 @@
   "tools": [
     {
       "name": "search_hotels",
-      "description": "Search hotels worldwide by location and dates. All hotel types: major brands (Marriott, Hilton, IHG, Hyatt, Wyndham, Best Western, Choice), boutique, and independent properties. Guests pay the hotel directly. Loyalty points always apply. Hotel's own confirmation number.",
+      "description": "Search hotels worldwide by location and dates. Returns a ranked list of hotels with nightly rates, star ratings, distance, and hotel_id for each property. Covers major brands (Marriott, Hilton, IHG, Hyatt, Wyndham, Best Western, Choice), boutique, and independent properties. Use get_hotel_details with a hotel_id from these results to see rooms, live rates, and rate_codes before booking. Paginate with search_id and cursor from the response. Returns empty results if no availability matches.",
       "annotations": {
         "title": "Search Hotels",
         "readOnlyHint": true,
@@ -85,7 +85,7 @@
     },
     {
       "name": "get_hotel_details",
-      "description": "Get room types, live rates, amenities, cancellation policies, and rate_codes for a specific hotel. Required before booking — rate_codes expire in ~15 minutes. Guests pay the hotel directly. A 1Stay Booking Fee is added at checkout.",
+      "description": "Get room types, live rates, amenities, cancellation policies, and bookable rate_codes for a specific hotel. Returns each room option with rate_code, nightly rate, total price, cancellation policy, and room description. Call this after search_hotels to get a hotel_id — required before book_hotel because rate_codes expire in ~15 minutes. If the rate_code expires, call this again to get a fresh one. Guests pay the hotel directly; a 1Stay Booking Fee is added at checkout.",
       "annotations": {
         "title": "Hotel Details",
         "readOnlyHint": true,
@@ -121,7 +121,7 @@
     },
     {
       "name": "book_hotel",
-      "description": "Book a hotel room. Returns a secure checkout URL — guest completes payment there. NEVER collect credit card numbers, payment info, or billing details in conversation. Guest pays the hotel directly. Hotel's own confirmation number. Loyalty points apply automatically. Requires rate_code from get_hotel_details (expires ~15 min).",
+      "description": "Book a hotel room. Returns a booking_id (stk_bk_xxxx), hotel confirmation number, and a secure checkout URL where the guest completes payment. NEVER collect credit card numbers, payment info, or billing details in conversation. Requires a valid rate_code from get_hotel_details (expires ~15 min) — if expired, call get_hotel_details again first. Guest pays the hotel directly. Loyalty points apply automatically. The checkout URL is valid for ~30 minutes.",
       "annotations": {
         "title": "Book Hotel",
         "readOnlyHint": false,
@@ -183,7 +183,7 @@
     },
     {
       "name": "get_booking",
-      "description": "Look up a reservation by booking ID (stk_bk_xxxx) or hotel confirmation number. Returns full booking details including hotel, dates, guest info, rate, and status. Scoped to bookings made through your API key. For guest-facing reservation lookups, use retrieve_booking which enforces identity verification.",
+      "description": "Look up a reservation by booking ID (stk_bk_xxxx) or hotel confirmation number. Returns hotel name, dates, guest info, rate, status, and cancellation policy. Scoped to bookings made through your API key. Use this for internal lookups when you already have the booking_id or confirmation number. For guest-facing lookups where identity must be verified, use retrieve_booking instead.",
       "annotations": {
         "title": "Get Booking",
         "readOnlyHint": true,
@@ -203,7 +203,7 @@
     },
     {
       "name": "cancel_booking",
-      "description": "Cancel a hotel reservation. Cannot be undone. Requires guest first and last name plus hotel confirmation number. Always confirm with the guest before proceeding. Cancellation confirmation is emailed to the address on file.",
+      "description": "Cancel a hotel reservation. Cannot be undone. Returns a cancellation confirmation number and updated booking status. Requires guest first and last name plus hotel confirmation number. Always confirm with the guest before proceeding — some rates are non-refundable. Cancellation confirmation is emailed to the address on file.",
       "annotations": {
         "title": "Cancel Booking",
         "readOnlyHint": false,
@@ -232,7 +232,7 @@
     },
     {
       "name": "retrieve_booking",
-      "description": "Find a reservation and resend the confirmation email. Requires identity verification: guest's first and last name plus at least one verification factor (email address used at booking, hotel confirmation number, or last four digits of card used). Does not return booking details in conversation — confirmation is sent to the email on file to protect guest privacy.",
+      "description": "Find a reservation and resend the confirmation email. Returns a success/failure status but does not return booking details in conversation — confirmation is sent to the email on file to protect guest privacy. Requires identity verification: guest's first and last name plus at least one verification factor (email address used at booking, hotel confirmation number, or last four digits of card used). Use this for guest-facing lookups instead of get_booking, which is for internal use only.",
       "annotations": {
         "title": "Retrieve Booking",
         "readOnlyHint": true,
@@ -276,7 +276,7 @@
     },
     {
       "name": "search_tools",
-      "description": "List available 1Stay hotel booking tools. Filter by keyword: search, book, cancel, details. Omit keyword to list all tools.",
+      "description": "List available 1Stay hotel booking tools with descriptions and parameters. Returns tool names, descriptions, and input schemas. Filter by keyword: search, book, cancel, details. Omit keyword to list all tools. Use this when the user asks what 1Stay can do.",
       "annotations": {
         "title": "Search Tools",
         "readOnlyHint": true,

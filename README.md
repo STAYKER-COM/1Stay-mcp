@@ -22,13 +22,13 @@ Built by [Stayker](https://stayker.com) (WPF Holdings, LLC), a licensed travel t
 
 | Tool | Description | Annotations |
 |------|-------------|-------------|
-| `search_hotels` | Search hotels by location, dates, guests, and optional filters | `readOnlyHint: true` |
-| `get_hotel_details` | Get room types, amenities, images, and live rates for a specific property | `readOnlyHint: true` |
-| `book_hotel` | Create a reservation and receive a secure checkout URL | `destructiveHint: true` |
-| `get_booking` | Look up a reservation by confirmation number | `readOnlyHint: true` |
-| `cancel_booking` | Cancel an existing reservation | `destructiveHint: true` |
-| `retrieve_booking` | Find a reservation and resend the confirmation email | `readOnlyHint: true` |
-| `search_tools` | List available 1Stay tools, optionally filtered by keyword | `readOnlyHint: true` |
+| `search_hotels` | Search hotels by location and dates. Returns ranked list with rates, star ratings, and hotel_ids. Use results with `get_hotel_details`. | `readOnlyHint: true` |
+| `get_hotel_details` | Get room types, live rates, cancellation policies, and bookable rate_codes. Required before `book_hotel` — rate_codes expire in ~15 min. | `readOnlyHint: true` |
+| `book_hotel` | Create a reservation. Returns booking_id, confirmation number, and secure checkout URL for payment. Requires valid rate_code. | `destructiveHint: true` |
+| `get_booking` | Look up a reservation by booking_id or confirmation number. Returns full booking details. For internal use — use `retrieve_booking` for guest-facing lookups. | `readOnlyHint: true` |
+| `cancel_booking` | Cancel a reservation. Cannot be undone. Returns cancellation confirmation number. | `destructiveHint: true` |
+| `retrieve_booking` | Find a reservation and resend confirmation email. Requires identity verification. Does not expose booking details in conversation. | `readOnlyHint: true` |
+| `search_tools` | List available 1Stay tools with descriptions and parameters. Filter by keyword or list all. | `readOnlyHint: true` |
 
 ## Setup
 
