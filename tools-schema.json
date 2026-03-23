@@ -183,7 +183,7 @@
     },
     {
       "name": "get_booking",
-      "description": "Look up a reservation by booking ID (stk_bk_xxxx) or hotel confirmation number. Returns full booking details including hotel, dates, guest info, rate, and status. Scoped to bookings made through your API key. For guest-facing reservation lookups, use retrieve_booking which enforces identity verification.",
+      "description": "Look up a reservation by hotel confirmation number. Returns full booking details including hotel, dates, guest info, rate, and status. Scoped to bookings made through your API key. For guest-facing reservation lookups, use retrieve_booking which enforces identity verification.",
       "annotations": {
         "title": "Get Booking",
         "readOnlyHint": true,
@@ -195,7 +195,7 @@
         "properties": {
           "booking_id": {
             "type": "string",
-            "description": "Booking ID (e.g. stk_bk_xxxx) or hotel confirmation number"
+            "description": "Hotel confirmation number"
           }
         },
         "required": ["booking_id"]
