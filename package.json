@@ -1,6 +1,6 @@
 {
   "name": "1stay-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hotel booking MCP server — 300K+ properties, real confirmation numbers, loyalty programs. Builders monetize every booking via Stripe Connect. The first MCP server that completes real hotel reservations inside AI conversations.",
   "mcpName": "com.stayker/1stay",
   "keywords": [
