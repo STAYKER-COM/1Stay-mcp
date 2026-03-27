@@ -2,21 +2,57 @@
 
 The first MCP server that completes real hotel reservations inside AI conversations. Not search-and-redirect. Not affiliate links. A confirmed booking with a real confirmation number — where your loyalty points accrue and your elite status benefits apply.
 
-Built by [Stayker](https://stayker.com) (WPF Holdings, LLC), a licensed travel technology company with 40 years of industry experience operating through established travel distribution networks. When you book through 1Stay, the hotel is the merchant of record — your stay is treated exactly like a direct booking.
+**Builders monetize every booking via Stripe Connect** — set your own fee, get paid directly. Turn any AI agent into a revenue-generating travel assistant.
 
-[![1StayHotel Booking MCP server](https://glama.ai/mcp/servers/STAYKER-COM/1Stay-mcp/badges/card.svg)](https://glama.ai/mcp/servers/STAYKER-COM/1Stay-mcp)
+Built by [Stayker](https://stayker.com) (WPF Holdings, LLC), a licensed travel technology company built on proven travel distribution architecture. When you book through 1Stay, the hotel is the merchant of record — your stay is treated exactly like a direct booking.
+
+[![npm version](https://img.shields.io/npm/v/1stay-mcp)](https://www.npmjs.com/package/1stay-mcp)
+[![1Stay Hotel Booking MCP server](https://glama.ai/mcp/servers/STAYKER-COM/1Stay-mcp/badges/card.svg)](https://glama.ai/mcp/servers/STAYKER-COM/1Stay-mcp)
 [![1Stay-mcp MCP server](https://glama.ai/mcp/servers/STAYKER-COM/1Stay-mcp/badges/score.svg)](https://glama.ai/mcp/servers/STAYKER-COM/1Stay-mcp)
 
-**MCP Endpoint:** `https://mcp.stayker.com/mcp`  
-**Protocol:** Streamable HTTP | MCP SDK v1.27.1 | Latest protocol version `2025-11-25`  
+## Quick Start
+
+### npx (fastest)
+
+```bash
+npx 1stay-mcp
+```
+
+### Claude Desktop / ChatGPT / Cursor / Windsurf
+
+Add to your MCP configuration:
+```json
+{
+  "mcpServers": {
+    "1stay": {
+      "url": "https://mcp.stayker.com/mcp"
+    }
+  }
+}
+```
+
+### Claude Code
+
+```bash
+claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
+```
+
+### Try It Now
+
+**Playground:** [1stay.ai/playground](https://1stay.ai/playground) — test all 7 tools in your browser, no setup required.
+
+**MCP Endpoint:** `https://mcp.stayker.com/mcp`
+**Protocol:** Streamable HTTP | MCP SDK v1.27.1 | Latest protocol version `2025-11-25`
 **Supported versions:** `2025-11-25`, `2025-06-18`, `2025-03-26`, `2024-11-05`, `2024-10-07`
 
 ## Features
 
-- **Real-time hotel search** across 100,000+ properties worldwide via travel distribution network
-- **Live rate quotes** with negotiated, loyalty-eligible pricing
-- **In-conversation booking** that returns a secure checkout URL — payment and PII never touch the AI layer
-- **Post-booking management** — retrieve confirmations, resend emails, cancel reservations
+- **300,000+ properties** across 140+ countries — major chains, independents, boutiques
+- **Real confirmation numbers** — not affiliate links, not redirects
+- **Loyalty program eligible** — Hilton, Marriott, IHG points accrue, elite status applies
+- **Stripe Connect monetization** — builders set their own booking fee and get paid directly
+- **Secure checkout** — payment handled on PCI-compliant page, never in the AI conversation
+- **Live rates** — real-time pricing from travel distribution networks, not cached or scraped
 
 ## Tools
 
@@ -30,64 +66,15 @@ Built by [Stayker](https://stayker.com) (WPF Holdings, LLC), a licensed travel t
 | `retrieve_booking` | Find a reservation and resend the confirmation email | `readOnlyHint: true` |
 | `search_tools` | List available 1Stay tools, optionally filtered by keyword | `readOnlyHint: true` |
 
-## Setup
+## For Builders — Monetize with Stripe Connect
 
-### Connect via Claude Desktop
+1Stay lets developers and AI builders earn on every hotel booking their agent completes. Connect your Stripe account, set your booking service fee, and get paid directly when guests check out.
 
-Add the following to your Claude Desktop MCP configuration:
-
-```json
-{
-  "mcpServers": {
-    "1stay": {
-      "url": "https://mcp.stayker.com/mcp"
-    }
-  }
-}
-```
-
-### Connect via Claude Code
-
-```bash
-claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
-```
+**Get started:** [1stay.ai/apply](https://1stay.ai/apply)
 
 ## Authentication
 
 1Stay uses OAuth 2.0 authorization code flow. When connecting through Claude, the OAuth handshake is handled automatically. You'll need a valid 1Stay account to authenticate.
-
-**For developers:** See [1stay.ai/apply](https://1stay.ai/apply) for API access and pricing.
-
-## Examples
-
-### Example 1: Search hotels for an upcoming trip
-
-**User prompt:** "I need a hotel in downtown Charlotte for May 7-10, two adults."
-
-**What happens:**
-- 1Stay searches available properties near downtown Charlotte for the specified dates
-- Returns a list of hotels with nightly rates, star ratings, and distance from city center
-- User can ask follow-up questions to narrow results by price, brand, or amenities
-
-### Example 2: Get details and book a room
-
-**User prompt:** "Show me room options from those results, then book the king room."
-
-**What happens:**
-- 1Stay retrieves live room types, rates, cancellation policies, and property amenities
-- User selects a room and provides guest name, email, and phone number
-- 1Stay creates the reservation and returns a secure checkout URL to complete payment
-- Payment is handled on a secure page — credit card information never enters the AI conversation
-
-### Example 3: Look up and manage an existing reservation
-
-**User prompt:** "Can you pull up my reservation and resend the confirmation email?"
-
-**What happens:**
-- 1Stay locates the reservation using the confirmation number or guest information
-- Displays reservation details including hotel name, dates, rate, and confirmation number
-- Resends the confirmation email to the address on file
-- If needed, the user can request cancellation directly in conversation
 
 ## How Booking Works
 
@@ -100,9 +87,25 @@ claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
 
 Credit card and payment information never passes through the AI conversation. The checkout URL is valid for approximately 30 minutes.
 
-## Pricing
+## Examples
 
-1Stay is a commercial service. A non-refundable booking service fee applies to each completed reservation. Developer API access is available via a monthly subscription with metered usage. Full pricing details are available at [1stay.ai](https://1stay.ai).
+### Search hotels for an upcoming trip
+
+**User prompt:** "I need a hotel in downtown Charlotte for May 7-10, two adults."
+
+1Stay searches available properties, returns hotels with nightly rates, star ratings, and distance from city center. Ask follow-ups to narrow by price, brand, or amenities.
+
+### Get details and book a room
+
+**User prompt:** "Show me room options, then book the king room."
+
+1Stay retrieves live room types, rates, and cancellation policies. Provide guest name, email, and phone — 1Stay creates the reservation and returns a secure checkout URL.
+
+### Look up and manage a reservation
+
+**User prompt:** "Pull up my reservation and resend the confirmation email."
+
+1Stay locates the reservation, displays details, and resends the confirmation email. Cancel directly in conversation if needed.
 
 ## Coming Soon
 
@@ -110,39 +113,22 @@ Credit card and payment information never passes through the AI conversation. Th
 - **SMS concierge** — opt-in post-booking updates and itinerary support via text
 - **Multi-room coordination** — group booking tools for teams, families, and event attendees
 
-## Privacy Policy
+## Privacy & Legal
 
-See our privacy policy: [stayker.com/legal/privacy](https://stayker.com/legal/privacy)
-
-See our MCP-specific data policy: [stayker.com/legal/mcp-policy](https://stayker.com/legal/mcp-policy)
+- Privacy policy: [stayker.com/legal/privacy](https://stayker.com/legal/privacy)
+- MCP data policy: [stayker.com/legal/mcp-policy](https://stayker.com/legal/mcp-policy)
 
 ## Support
 
-- **Chat:** [https://stayker.com/service](https://stayker.com/service)
-- **Issues:** [github.com/STAYKER-COM/1stay-mcp/issues](https://github.com/STAYKER-COM/1stay-mcp/issues)
-- **Documentation:** [1stay.ai](https://1stay.ai)
-
-## Which integrations are available for this server?
-
-The following integrations are available for this server:
-
-- **Global hotel inventory** — 250,000+ properties across 140+ countries including all major chains, independent, and boutique hotels
-- **Loyalty programs** — all major hotel loyalty programs are eligible (points accrue, elite status applies)
-- **Live rates & availability** — real-time pricing, not cached or scraped
-- **Secure checkout** — PCI-compliant hosted checkout page; no payment data in the AI conversation
-- **Stripe Connect** — developers set their own booking service fee (1Stay is not the merchant of record on hotel stays)
-
-1Stay is not a direct integration with any single hotel chain. It is distribution infrastructure — hotels are the merchant of record on every transaction.
-
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for a record of all API and documentation changes.
+- **Chat:** [stayker.com/service](https://stayker.com/service)
+- **Issues:** [github.com/STAYKER-COM/1Stay-mcp/issues](https://github.com/STAYKER-COM/1Stay-mcp/issues)
+- **Docs:** [1stay.ai](https://1stay.ai)
 
 ## About Stayker
 
-Stayker is a travel technology company that has powered hotel reservations for events, organizations, and brands. No hotel contracts, no rooming lists. Live worldwide inventory. Our platform connects directly to travel distribution networks — no middlemen, no markups, no affiliate redirects. Hotels are the merchant of record on every booking.
+Stayker is a travel technology company that powers hotel reservations for events, organizations, and brands. Built on proven travel distribution architecture — live worldwide inventory, no middlemen, no markups, no affiliate redirects. Hotels are the merchant of record on every booking.
 
-**Founded:** 2019 | **Industry experience:** 40+ years | **Headquarters:** Charlotte, NC
+**Headquarters:** Charlotte, NC
 
 *Build. Book. Connect.*
 

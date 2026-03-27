@@ -1,0 +1,27 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.stayker/1stay",
+  "description": "Hotel booking MCP server — 300K+ properties, real confirmation numbers, loyalty programs. The first MCP server that completes real hotel reservations inside AI conversations. Search, book, manage reservations with 7 tools. Builders monetize via Stripe Connect.",
+  "repository": {
+    "url": "https://github.com/STAYKER-COM/1Stay-mcp",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "1stay-mcp",
+      "version": "1.0.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "remoteEndpoints": [
+    {
+      "url": "https://mcp.stayker.com/mcp",
+      "transport": "streamable-http",
+      "authentication": "oauth2.1"
+    }
+  ]
+}

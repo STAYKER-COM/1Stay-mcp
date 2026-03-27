@@ -1,9 +1,56 @@
 {
-  "name": "1stay-mcp-tests",
-  "private": true,
-  "description": "Test suite for 1Stay MCP schema and documentation",
+  "name": "1stay-mcp",
+  "version": "1.0.0",
+  "description": "Hotel booking MCP server — 300K+ properties, real confirmation numbers, loyalty programs. Builders monetize every booking via Stripe Connect. The first MCP server that completes real hotel reservations inside AI conversations.",
+  "mcpName": "com.stayker/1stay",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "hotel",
+    "travel",
+    "booking",
+    "reservation",
+    "ai",
+    "agent",
+    "stayker",
+    "1stay"
+  ],
+  "author": {
+    "name": "Stayker (WPF Holdings, LLC)",
+    "email": "hello@1stay.ai",
+    "url": "https://1stay.ai"
+  },
+  "license": "MIT",
+  "homepage": "https://1stay.ai",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/STAYKER-COM/1Stay-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/STAYKER-COM/1Stay-mcp/issues"
+  },
+  "bin": {
+    "1stay-mcp": "bin/cli.js"
+  },
+  "main": "index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin/",
+    "index.js",
+    "tools-schema.json",
+    "server.json",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
+    "start": "node bin/cli.js",
     "test": "node --test tests/*.test.js",
     "test:integration": "node --test tests/integration/*.test.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1"
   }
 }

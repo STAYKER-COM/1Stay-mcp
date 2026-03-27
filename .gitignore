@@ -9,3 +9,14 @@ Thumbs.db
 # Environment
 .env
 .env.local
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build
+dist/
+*.tgz
+
+# Temp
+commit-msg.txt
