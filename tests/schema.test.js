@@ -1,8 +1,10 @@
-const { describe, it, before } = require('node:test');
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
+import { describe, it, before } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SCHEMA_PATH = path.join(__dirname, '..', 'tools-schema.json');
 
 describe('tools-schema.json', () => {
@@ -143,15 +145,36 @@ describe('tools-schema.json', () => {
       toolsByName = Object.fromEntries(schema.tools.map(t => [t.name, t]));
     });
 
-    it('book_hotel and cancel_booking are destructive', () => {
-      assert.equal(toolsByName['book_hotel']?.annotations.destructiveHint, true, 'book_hotel must be destructive');
+    it('cancel_booking is destructive', () => {
       assert.equal(toolsByName['cancel_booking']?.annotations.destructiveHint, true, 'cancel_booking must be destructive');
     });
 
-    it('search_hotels, get_hotel_details, get_booking, retrieve_booking are read-only', () => {
-      for (const name of ['search_hotels', 'get_hotel_details', 'get_booking', 'retrieve_booking']) {
+    it('book_hotel is not destructive (creates, does not delete)', () => {
+      assert.equal(toolsByName['book_hotel']?.annotations.destructiveHint, false, 'book_hotel must not be destructive');
+    });
+
+    it('book_hotel and cancel_booking are idempotent', () => {
+      assert.equal(toolsByName['book_hotel']?.annotations.idempotentHint, true, 'book_hotel must be idempotent');
+      assert.equal(toolsByName['cancel_booking']?.annotations.idempotentHint, true, 'cancel_booking must be idempotent');
+    });
+
+    it('search_hotels, get_hotel_details, get_booking, lookup_booking are read-only', () => {
+      for (const name of ['search_hotels', 'get_hotel_details', 'get_booking', 'lookup_booking']) {
         assert.equal(toolsByName[name]?.annotations.readOnlyHint, true, `${name} must be readOnly`);
       }
+    });
+
+    it('lookup_booking is not openWorld (internal lookup)', () => {
+      assert.equal(toolsByName['lookup_booking']?.annotations.openWorldHint, false, 'lookup_booking must not be openWorld');
+    });
+
+    it('resend_confirmation is openWorld and not readOnly', () => {
+      assert.equal(toolsByName['resend_confirmation']?.annotations.readOnlyHint, false, 'resend_confirmation must not be readOnly');
+      assert.equal(toolsByName['resend_confirmation']?.annotations.openWorldHint, true, 'resend_confirmation must be openWorld');
+    });
+
+    it('retrieve_booking does not exist (replaced by lookup_booking + resend_confirmation)', () => {
+      assert.equal(toolsByName['retrieve_booking'], undefined, 'retrieve_booking must not exist');
     });
 
     it('search_hotels does not require location (supports lat/lng search)', () => {

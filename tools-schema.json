@@ -1,8 +1,8 @@
 {
   "server": {
     "name": "1Stay Hotels",
-    "version": "1.0.0",
-    "description": "Real-time hotel search and booking via MCP. The first MCP server that completes real hotel reservations inside AI conversations.",
+    "version": "1.1.0",
+    "description": "1Stay — Hotel booking for AI conversations. Search 250,000+ properties worldwide across major brands (Marriott, Hilton, IHG, Hyatt, Wyndham, Best Western, Choice) and independent/boutique hotels. Get live rates, room details, and cancellation policies. Book with a secure checkout link — guest pays the hotel directly and receives the hotel's own confirmation number. Loyalty points apply to every booking. A 1Stay Booking Fee is the only additional charge, added at checkout.",
     "endpoint": "https://mcp.stayker.com/mcp",
     "transport": "streamable-http",
     "protocol_version": "2025-11-25",
@@ -17,7 +17,7 @@
   "tools": [
     {
       "name": "search_hotels",
-      "description": "Search hotels worldwide by location and dates. All hotel types: major brands (Marriott, Hilton, IHG, Hyatt, Wyndham, Best Western, Choice), boutique, and independent properties. Guests pay the hotel directly. Loyalty points always apply. Hotel's own confirmation number.",
+      "description": "Search and book hotels by location and dates. Returns available properties with nightly rates across major brands, boutique, and independent hotels.\n\nGuest pays the hotel directly. Hotel's own confirmation number. Loyalty points apply.",
       "annotations": {
         "title": "Search Hotels",
         "readOnlyHint": true,
@@ -61,7 +61,7 @@
           },
           "chain_code": {
             "type": "string",
-            "description": "Filter by hotel chain code (e.g. 'MC' for Marriott, 'HH' for Hilton)"
+            "description": "Two-letter hotel chain filter. MC=Marriott, HH=Hilton, HI=IHG, YX=Hyatt, BW=Best Western, WY=Wyndham, EL=Choice. Omit for boutique, independent, or unbranded searches."
           },
           "currency": {
             "type": "string",
@@ -85,7 +85,7 @@
     },
     {
       "name": "get_hotel_details",
-      "description": "Get room types, live rates, amenities, cancellation policies, and rate_codes for a specific hotel. Required before booking — rate_codes expire in ~15 minutes. Guests pay the hotel directly. A 1Stay Booking Fee is added at checkout.",
+      "description": "Get rates and room details for a specific hotel. Returns room types, live rates, amenities, cancellation policies, and rate_codes required by book_hotel.\n\nGuest pays the hotel directly. Rates shown are what the hotel charges. A 1Stay Booking Fee is added at checkout. Loyalty points eligible.\n\nRoom type notes: \"Run of house\" means the hotel assigns the room at check-in. \"Suite\" at select-service brands usually means a larger room with a sofa, not a separate bedroom. Non-refundable rates are cheaper but cannot be changed or canceled.",
       "annotations": {
         "title": "Hotel Details",
         "readOnlyHint": true,
@@ -121,11 +121,11 @@
     },
     {
       "name": "book_hotel",
-      "description": "Book a hotel room. Returns a secure checkout URL — guest completes payment there. NEVER collect credit card numbers, payment info, or billing details in conversation. Guest pays the hotel directly. Hotel's own confirmation number. Loyalty points apply automatically. Requires rate_code from get_hotel_details (expires ~15 min).",
+      "description": "Book a hotel room. Returns a secure checkout URL where the guest completes payment. Do not collect credit card numbers, payment info, or billing details in conversation.\n\nGuest pays the hotel directly. Their credit card statement shows the hotel name, not 1Stay. Hotel's own confirmation number. Loyalty points apply automatically. A 1Stay Booking Fee is added at checkout.\n\nRequires rate_code from get_hotel_details (expires in approximately 15 minutes). If expired, call get_hotel_details again for a fresh code.",
       "annotations": {
         "title": "Book Hotel",
         "readOnlyHint": false,
-        "destructiveHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": true
       },
@@ -182,8 +182,72 @@
       }
     },
     {
+      "name": "lookup_booking",
+      "description": "Look up a reservation by verifying the guest's identity. Returns the confirmation number and booking summary in conversation.\n\nRequired before calling:\n1. Guest full name (first and last)\n2. At least one verification factor: email address used when booking, hotel confirmation number, or last 4 digits of the card used to book (check-in date also required for card verification)\n\nDo not call this tool without the guest's full name and at least one verification factor. If the guest cannot provide any verification factor, their reservation cannot be looked up — this is for the security of their booking.\n\nTo resend the confirmation email, use resend_confirmation after verifying identity with this tool. To cancel, use cancel_booking.",
+      "annotations": {
+        "title": "Lookup Booking",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "description": "Guest first name on the reservation"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Guest last name on the reservation"
+          },
+          "confirmation_number": {
+            "type": "string",
+            "description": "Hotel confirmation number"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address used when booking"
+          },
+          "last_four_card": {
+            "type": "string",
+            "description": "Last 4 digits of the card used to book"
+          },
+          "check_in_date": {
+            "type": "string",
+            "description": "Check-in date (YYYY-MM-DD) — required with last_four_card"
+          }
+        },
+        "required": ["first_name", "last_name"]
+      }
+    },
+    {
+      "name": "resend_confirmation",
+      "description": "Resend a hotel reservation confirmation email. Use after verifying the guest's identity with lookup_booking.\n\nSends the full confirmation to the email address on file. If the guest needs it sent to a different email (typo on original, or can't access it), provide updated_email.",
+      "annotations": {
+        "title": "Resend Confirmation",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "confirmation_number": {
+            "type": "string",
+            "description": "Hotel confirmation number from lookup_booking"
+          },
+          "updated_email": {
+            "type": "string",
+            "description": "Send confirmation to this email instead of the one on file"
+          }
+        },
+        "required": ["confirmation_number"]
+      }
+    },
+    {
       "name": "get_booking",
-      "description": "Look up a reservation by hotel confirmation number. Returns full booking details including hotel, dates, guest info, rate, and status. Scoped to bookings made through your API key. For guest-facing reservation lookups, use retrieve_booking which enforces identity verification.",
+      "description": "Look up a reservation by booking ID (stk_bk_xxxx) or hotel confirmation number. Returns full booking details including hotel, dates, guest info, rate, and status.\n\nDeveloper-level lookup tool with no identity verification. For guest-facing reservation lookups, use lookup_booking which enforces identity verification before returning any data.",
       "annotations": {
         "title": "Get Booking",
         "readOnlyHint": true,
@@ -203,7 +267,7 @@
     },
     {
       "name": "cancel_booking",
-      "description": "Cancel a hotel reservation. Cannot be undone. Requires guest first and last name plus hotel confirmation number. Always confirm with the guest before proceeding. Cancellation confirmation is emailed to the address on file.",
+      "description": "Cancel a hotel reservation. This action cannot be undone.\n\nRequires guest first name, last name, and hotel confirmation number.\n\nCancellation of non-refundable rates forfeits the full amount. The guest should be aware of the cancellation policy before this tool is called.\n\nTo change dates: the recommended pattern is to search and book new dates first, then cancel the original reservation. Canceling before securing a new booking risks losing the room.\n\nCancellation confirmation is emailed to the address on file.",
       "annotations": {
         "title": "Cancel Booking",
         "readOnlyHint": false,
@@ -228,50 +292,6 @@
           }
         },
         "required": ["first_name", "last_name", "confirmation_number"]
-      }
-    },
-    {
-      "name": "retrieve_booking",
-      "description": "Find a reservation and resend the confirmation email. Requires identity verification: guest's first and last name plus at least one verification factor (email address used at booking, hotel confirmation number, or last four digits of card used). Does not return booking details in conversation — confirmation is sent to the email on file to protect guest privacy.",
-      "annotations": {
-        "title": "Retrieve Booking",
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "openWorldHint": false
-      },
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "first_name": {
-            "type": "string",
-            "description": "Guest's first name"
-          },
-          "last_name": {
-            "type": "string",
-            "description": "Guest's last name"
-          },
-          "confirmation_number": {
-            "type": "string",
-            "description": "Hotel confirmation number (optional verification factor)"
-          },
-          "email": {
-            "type": "string",
-            "description": "Email address used when booking (optional verification factor)"
-          },
-          "last_four_card": {
-            "type": "string",
-            "description": "Last 4 digits of card used to book (must also provide check_in_date)"
-          },
-          "check_in_date": {
-            "type": "string",
-            "description": "Check-in date in YYYY-MM-DD format (required when using last_four_card verification)"
-          },
-          "updated_email": {
-            "type": "string",
-            "description": "Resend confirmation to a different email address"
-          }
-        },
-        "required": ["first_name", "last_name"]
       }
     },
     {

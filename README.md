@@ -39,7 +39,7 @@ claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
 
 ### Try It Now
 
-**Playground:** [1stay.ai/playground](https://1stay.ai/playground) — test all 7 tools in your browser, no setup required.
+**Playground:** [1stay.ai/playground](https://1stay.ai/playground) — test all 8 tools in your browser, no setup required.
 
 **MCP Endpoint:** `https://mcp.stayker.com/mcp`
 **Protocol:** Streamable HTTP | MCP SDK v1.27.1 | Latest protocol version `2025-11-25`
@@ -60,10 +60,11 @@ claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
 |------|-------------|-------------|
 | `search_hotels` | Search hotels by location, dates, guests, and optional filters | `readOnlyHint: true` |
 | `get_hotel_details` | Get room types, amenities, images, and live rates for a specific property | `readOnlyHint: true` |
-| `book_hotel` | Create a reservation and receive a secure checkout URL | `destructiveHint: true` |
-| `get_booking` | Look up a reservation by confirmation number | `readOnlyHint: true` |
+| `book_hotel` | Create a reservation and receive a secure checkout URL | `idempotentHint: true` |
+| `lookup_booking` | Look up a reservation with identity verification | `readOnlyHint: true` |
+| `resend_confirmation` | Resend confirmation email to guest | `openWorldHint: true` |
+| `get_booking` | Look up a reservation by booking ID or confirmation number | `readOnlyHint: true` |
 | `cancel_booking` | Cancel an existing reservation | `destructiveHint: true` |
-| `retrieve_booking` | Find a reservation and resend the confirmation email | `readOnlyHint: true` |
 | `search_tools` | List available 1Stay tools, optionally filtered by keyword | `readOnlyHint: true` |
 
 ## For Builders — Monetize with Stripe Connect
@@ -103,9 +104,9 @@ Credit card and payment information never passes through the AI conversation. Th
 
 ### Look up and manage a reservation
 
-**User prompt:** "Pull up my reservation and resend the confirmation email."
+**User prompt:** "I need to look up my reservation — Amy Barker, amy@stayker.com"
 
-1Stay locates the reservation, displays details, and resends the confirmation email. Cancel directly in conversation if needed.
+1Stay verifies your identity and returns the confirmation number and booking summary in conversation. Ask to resend the confirmation email or cancel directly in conversation.
 
 ## Coming Soon
 
