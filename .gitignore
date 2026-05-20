@@ -8,7 +8,17 @@ Thumbs.db
 
 # Environment
 .env
-.env.local
+.env.*
+
+# Credentials — never commit. Catch raw secret dumps, env files, and scratch notes.
+*.txt
+!README*.txt
+!CHANGELOG*.txt
+!llms.txt
+*credential*
+*secret*
+*token*
+*webhook*
 
 # Dependencies
 node_modules/
@@ -17,6 +27,3 @@ package-lock.json
 # Build
 dist/
 *.tgz
-
-# Temp
-commit-msg.txt
