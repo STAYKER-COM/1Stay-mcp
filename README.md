@@ -133,6 +133,16 @@ Stayker is a travel technology company that powers hotel reservations for events
 
 *Build. Book. Connect.*
 
+## License
+
+Proprietary. © 2026 WPF Holdings, LLC. All rights reserved. See [LICENSE](./LICENSE).
+
+Versions 1.1.0 and earlier were distributed under the MIT License and remain
+available under those terms to anyone who obtained them under that license.
+
+Use of the hosted MCP endpoint at `https://mcp.stayker.com/mcp` is governed
+by the [Stayker MCP Policy](https://stayker.com/legal/mcp-policy/).
+
 ---
 
 © 2026 WPF Holdings, LLC. All rights reserved.
