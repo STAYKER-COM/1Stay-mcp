@@ -177,16 +177,39 @@ describe('tools-schema.json', () => {
       assert.equal(toolsByName['retrieve_booking'], undefined, 'retrieve_booking must not exist');
     });
 
-    it('search_hotels does not require location (supports lat/lng search)', () => {
+    it('search_hotels requires location (matches live server contract)', () => {
       const required = toolsByName['search_hotels']?.inputSchema.required || [];
-      assert.ok(!required.includes('location'), 'search_hotels should not require location (lat/lng is an alternative)');
+      assert.ok(required.includes('location'), 'search_hotels must require location (live server requires it)');
+      assert.ok(required.includes('check_in'), 'search_hotels must require check_in');
+      assert.ok(required.includes('check_out'), 'search_hotels must require check_out');
     });
 
     it('book_hotel requires guest contact information', () => {
       const required = toolsByName['book_hotel']?.inputSchema.required || [];
       assert.ok(required.includes('guest_name'), 'book_hotel must require guest_name');
       assert.ok(required.includes('guest_email'), 'book_hotel must require guest_email');
-      assert.ok(required.includes('guest_phone'), 'book_hotel must require guest_phone');
+    });
+
+    it('book_hotel does not declare guest_phone (not accepted by live server)', () => {
+      const properties = toolsByName['book_hotel']?.inputSchema.properties || {};
+      const required = toolsByName['book_hotel']?.inputSchema.required || [];
+      assert.ok(!('guest_phone' in properties), 'book_hotel must not declare guest_phone (live server rejects it)');
+      assert.ok(!required.includes('guest_phone'), 'book_hotel must not require guest_phone');
+    });
+
+    it('declares exactly the eight live tools, no more, no less', () => {
+      const expected = [
+        'book_hotel',
+        'cancel_booking',
+        'get_booking',
+        'get_hotel_details',
+        'lookup_booking',
+        'resend_confirmation',
+        'search_hotels',
+        'search_tools'
+      ];
+      const actual = Object.keys(toolsByName).sort();
+      assert.deepEqual(actual, expected, 'Schema must declare exactly the eight tools the live server exposes');
     });
   });
 });

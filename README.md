@@ -82,7 +82,7 @@ claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
 1Stay uses a **secure link handoff** model for payment:
 
 1. **Search and select** happen inside the AI conversation
-2. **Guest details** (name, email, phone) are collected in conversation to create the reservation
+2. **Guest details** (name, email) are collected in conversation to create the reservation
 3. **Payment** is completed on a secure, PCI-compliant checkout page — outside the AI layer
 4. **Confirmation** is delivered via email with your hotel confirmation number
 
@@ -100,7 +100,7 @@ Credit card and payment information never passes through the AI conversation. Th
 
 **User prompt:** "Show me room options, then book the king room."
 
-1Stay retrieves live room types, rates, and cancellation policies. Provide guest name, email, and phone — 1Stay creates the reservation and returns a secure checkout URL.
+1Stay retrieves live room types, rates, and cancellation policies. Provide guest name and email — 1Stay creates the reservation and returns a secure checkout URL.
 
 ### Look up and manage a reservation
 

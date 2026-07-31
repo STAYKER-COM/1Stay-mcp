@@ -29,15 +29,15 @@
         "properties": {
           "location": {
             "type": "string",
-            "description": "City, address, venue, or landmark. Required unless latitude/longitude provided."
+            "description": "City, address, venue, or landmark (e.g. 'Nashville, TN' or 'Times Square, NYC'). Required for all searches."
           },
           "latitude": {
             "type": "number",
-            "description": "Latitude — skip geocoding if provided with longitude"
+            "description": "Latitude — must be provided together with longitude"
           },
           "longitude": {
             "type": "number",
-            "description": "Longitude — skip geocoding if provided with latitude"
+            "description": "Longitude — must be provided together with latitude"
           },
           "radius": {
             "type": "integer",
@@ -45,11 +45,11 @@
           },
           "check_in": {
             "type": "string",
-            "description": "Check-in date in YYYY-MM-DD format"
+            "description": "Check-in date in YYYY-MM-DD format (e.g. 2026-05-06). Must be today or later."
           },
           "check_out": {
             "type": "string",
-            "description": "Check-out date in YYYY-MM-DD format"
+            "description": "Check-out date in YYYY-MM-DD format (e.g. 2026-05-07). Must be after check_in."
           },
           "guests_per_room": {
             "type": "integer",
@@ -80,7 +80,7 @@
             "description": "Pagination cursor from previous search response"
           }
         },
-        "required": ["check_in", "check_out"]
+        "required": ["location", "check_in", "check_out"]
       }
     },
     {
@@ -101,11 +101,11 @@
           },
           "check_in": {
             "type": "string",
-            "description": "Check-in date in YYYY-MM-DD format"
+            "description": "Check-in date in YYYY-MM-DD format (e.g. 2026-05-06)"
           },
           "check_out": {
             "type": "string",
-            "description": "Check-out date in YYYY-MM-DD format"
+            "description": "Check-out date in YYYY-MM-DD format (e.g. 2026-05-07)"
           },
           "guests": {
             "type": "integer",
@@ -134,7 +134,7 @@
         "properties": {
           "hotel_id": {
             "type": "string",
-            "description": "Hotel ID from search or details results"
+            "description": "Hotel ID from search or details"
           },
           "rate_code": {
             "type": "string",
@@ -142,11 +142,11 @@
           },
           "check_in": {
             "type": "string",
-            "description": "Check-in date in YYYY-MM-DD format"
+            "description": "Check-in date in YYYY-MM-DD format (e.g. 2026-05-06)"
           },
           "check_out": {
             "type": "string",
-            "description": "Check-out date in YYYY-MM-DD format"
+            "description": "Check-out date in YYYY-MM-DD format (e.g. 2026-05-07)"
           },
           "guests": {
             "type": "integer",
@@ -154,15 +154,11 @@
           },
           "guest_name": {
             "type": "string",
-            "description": "Full name of the primary guest"
+            "description": "Guest full name"
           },
           "guest_email": {
             "type": "string",
-            "description": "Email address for booking confirmation"
-          },
-          "guest_phone": {
-            "type": "string",
-            "description": "Phone number for the primary guest"
+            "description": "Guest email for confirmation"
           },
           "external_reference_id": {
             "type": "string",
@@ -176,8 +172,7 @@
           "check_out",
           "guests",
           "guest_name",
-          "guest_email",
-          "guest_phone"
+          "guest_email"
         ]
       }
     },
@@ -235,11 +230,11 @@
         "properties": {
           "confirmation_number": {
             "type": "string",
-            "description": "Hotel confirmation number from lookup_booking"
+            "description": "Hotel confirmation number"
           },
           "updated_email": {
             "type": "string",
-            "description": "Send confirmation to this email instead of the one on file"
+            "description": "If provided, send confirmation to this email instead of the one on file. Use when guest typo'd their email at booking or can't access the original email."
           }
         },
         "required": ["confirmation_number"]
@@ -259,7 +254,7 @@
         "properties": {
           "booking_id": {
             "type": "string",
-            "description": "Hotel confirmation number"
+            "description": "Booking ID (e.g. stk_bk_xxxx) or confirmation number"
           }
         },
         "required": ["booking_id"]
