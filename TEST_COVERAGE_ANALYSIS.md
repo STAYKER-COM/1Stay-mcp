@@ -49,7 +49,7 @@ These tests call the actual MCP endpoint and verify the server contract hasn't c
 Validate schema constraints catch bad input:
 
 - **Date format enforcement** — `check_in`/`check_out` described as YYYY-MM-DD
-- **Required field coverage** — each tool's required fields are correct (e.g., `search_hotels` requires `check_in`, `check_out`, `guests` but not `location`)
+- **Required field coverage** — each tool's required fields are correct (e.g., `search_hotels` requires `location`, `check_in`, and `check_out`)
 - **Type correctness** — `guests` is `integer` not `number`, `sms_opt_in` is `boolean`, etc.
 
 ### 6. Schema Regression Tests (Priority: Low)
