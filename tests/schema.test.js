@@ -173,6 +173,21 @@ describe('tools-schema.json', () => {
       assert.equal(toolsByName['resend_confirmation']?.annotations.openWorldHint, true, 'resend_confirmation must be openWorld');
     });
 
+    it('get_booking declares a verification_token param (identity gate)', () => {
+      const props = toolsByName['get_booking']?.inputSchema.properties || {};
+      assert.ok('verification_token' in props, 'get_booking must declare verification_token');
+    });
+
+    it('cancel_booking declares a cancellation_token param (two-step confirm)', () => {
+      const props = toolsByName['cancel_booking']?.inputSchema.properties || {};
+      assert.ok('cancellation_token' in props, 'cancel_booking must declare cancellation_token');
+    });
+
+    it('resend_confirmation does not declare updated_email (no recipient override)', () => {
+      const props = toolsByName['resend_confirmation']?.inputSchema.properties || {};
+      assert.ok(!('updated_email' in props), 'resend_confirmation must not declare updated_email');
+    });
+
     it('retrieve_booking does not exist (replaced by lookup_booking + resend_confirmation)', () => {
       assert.equal(toolsByName['retrieve_booking'], undefined, 'retrieve_booking must not exist');
     });
