@@ -111,4 +111,109 @@ describe('Documentation consistency', () => {
       );
     });
   });
+
+  // server.json is the public MCP registry manifest. Nothing verified it before,
+  // which is how it came to declare a "remoteEndpoints" key the registry schema
+  // does not define, and an "authentication": "oauth2.1" claim the server does
+  // not implement (OAuth discovery is deliberately disabled — it breaks authless
+  // mcp-remote connections). A published claim the server can't honour fails on
+  // contact, so it gets the same parity treatment as the README.
+  describe('server.json registry manifest', () => {
+    let manifest;
+    let pkg;
+
+    before(() => {
+      manifest = JSON.parse(
+        fs.readFileSync(path.join(__dirname, '..', 'server.json'), 'utf-8')
+      );
+      pkg = JSON.parse(
+        fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf-8')
+      );
+    });
+
+    it('uses the schema-defined "remotes" key, not "remoteEndpoints"', () => {
+      assert.ok(
+        Array.isArray(manifest.remotes),
+        'server.json must declare remotes[] (the registry schema has no "remoteEndpoints")'
+      );
+      assert.equal(
+        manifest.remoteEndpoints,
+        undefined,
+        '"remoteEndpoints" is not a field in the registry schema — use "remotes"'
+      );
+    });
+
+    it('declares no authentication field (the server is authless)', () => {
+      for (const remote of manifest.remotes) {
+        assert.equal(
+          remote.authentication,
+          undefined,
+          'The registry schema has no authentication field, and the server is ' +
+            'authless — OAuth discovery is disabled in stayker-mcp. Do not ' +
+            'advertise auth the endpoint will not perform.'
+        );
+      }
+    });
+
+    it('remote transport uses "type", with a schema-valid value', () => {
+      for (const remote of manifest.remotes) {
+        assert.ok(
+          ['streamable-http', 'sse'].includes(remote.type),
+          `remote.type must be "streamable-http" or "sse", got ${JSON.stringify(remote.type)}`
+        );
+        assert.equal(
+          remote.transport,
+          undefined,
+          'Remote transport is declared via "type", not "transport"'
+        );
+      }
+    });
+
+    it('remote endpoint matches the schema endpoint', () => {
+      const urls = manifest.remotes.map(r => r.url);
+      assert.ok(
+        urls.includes(schema.server.endpoint),
+        `server.json remotes must include the schema endpoint ${schema.server.endpoint}`
+      );
+    });
+
+    it('manifest version matches package.json', () => {
+      assert.equal(manifest.version, pkg.version, 'server.json version must track package.json');
+      for (const p of manifest.packages) {
+        assert.equal(
+          p.version,
+          pkg.version,
+          `packages[${p.identifier}].version must track package.json`
+        );
+      }
+    });
+
+    it('npm package identifier matches package.json name', () => {
+      const npmPkg = manifest.packages.find(p => p.registryType === 'npm');
+      assert.ok(npmPkg, 'server.json must declare the npm package');
+      assert.equal(npmPkg.identifier, pkg.name);
+    });
+
+    it('states the correct tool count in its description', () => {
+      const stated = manifest.description.match(/(\d+)\s+tools/);
+      assert.ok(stated, 'server.json description should state a tool count');
+      assert.equal(
+        Number(stated[1]),
+        schema.tools.length,
+        `server.json description says ${stated[1]} tools; schema has ${schema.tools.length}`
+      );
+    });
+
+    it('declares an icon (the directory tile falls back to a generic globe without one)', () => {
+      assert.ok(manifest.icons?.length > 0, 'server.json must declare at least one icon');
+      for (const icon of manifest.icons) {
+        assert.match(icon.src, /^https:\/\//, 'icon src must be an HTTPS URL');
+        assert.ok(
+          ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp']
+            .includes(icon.mimeType),
+          `icon mimeType ${icon.mimeType} is not allowed by the registry schema`
+        );
+      }
+    });
+  });
 });

@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    # Daily drift check against the live server. This repo publishes claims about
+    # a server that lives in another repo (stayker-mcp) and deploys separately,
+    # so a deploy there can silently invalidate what is published here. Nothing
+    # but a live call detects that.
+    - cron: "17 13 * * *"
+  workflow_dispatch:
+
+jobs:
+  # Offline checks — README <-> tools-schema.json <-> server.json parity.
+  # Runs on every PR and push. No network, no secrets.
+  consistency:
+    name: Schema & docs consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: npm install
+      - run: npm test
+
+  # Live checks — does the deployed server still match what we publish?
+  # Skipped on pull_request: a fork PR has no business calling production, and a
+  # transient GDS/network blip should not turn a docs PR red.
+  drift:
+    name: Declared vs live server
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: npm install
+      - run: npm run test:integration
