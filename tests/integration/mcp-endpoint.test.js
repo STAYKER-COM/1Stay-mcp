@@ -135,7 +135,10 @@ describe('Declared schema matches the live server', () => {
 
     const raw = await res.text();
     // Streamable HTTP may frame the reply as SSE ("data: {...}") or plain JSON.
-    const payload = raw.includes('data:')
+    // Decide from the actual Content-Type, not the body text — a description that
+    // merely contains "data:" must not be mistaken for SSE framing.
+    const contentType = res.headers.get('content-type') ?? '';
+    const payload = contentType.includes('text/event-stream')
       ? raw.split('\n').filter(l => l.startsWith('data:')).map(l => l.slice(5).trim()).join('')
       : raw;
 
