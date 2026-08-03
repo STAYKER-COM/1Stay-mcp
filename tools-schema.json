@@ -218,7 +218,7 @@
     },
     {
       "name": "resend_confirmation",
-      "description": "Resend a hotel reservation confirmation email. Use after verifying the guest's identity with lookup_booking.\n\nSends the full confirmation to the email address on file. If the guest needs it sent to a different email (typo on original, or can't access it), provide updated_email.",
+      "description": "Resend a hotel reservation confirmation email. Use after verifying the guest's identity with lookup_booking.\n\nThe confirmation is always sent to the email address on the booking record. There is no way to redirect it to a different address. If the guest can no longer access that inbox, direct them to support at https://stayker.com/service — a different address cannot be set through this tool.",
       "annotations": {
         "title": "Resend Confirmation",
         "readOnlyHint": false,
@@ -231,10 +231,6 @@
           "confirmation_number": {
             "type": "string",
             "description": "Hotel confirmation number"
-          },
-          "updated_email": {
-            "type": "string",
-            "description": "If provided, send confirmation to this email instead of the one on file. Use when guest typo'd their email at booking or can't access the original email."
           }
         },
         "required": ["confirmation_number"]
@@ -242,7 +238,7 @@
     },
     {
       "name": "get_booking",
-      "description": "Look up a reservation by booking ID (stk_bk_xxxx) or hotel confirmation number. Returns full booking details including hotel, dates, guest info, rate, and status.\n\nDeveloper-level lookup tool with no identity verification. For guest-facing reservation lookups, use lookup_booking which enforces identity verification before returning any data.",
+      "description": "Look up a reservation by booking ID (stk_bk_xxxx) or hotel confirmation number. Returns full booking details including hotel, dates, guest info, rate, and status.\n\nGuest-facing (anonymous) callers must first call lookup_booking to verify the guest's identity — that returns a verification_token, which you then pass here. Without a valid token, this tool returns no booking data. Developers authenticated with their own API key do not need a token; their access is scoped to their own bookings.",
       "annotations": {
         "title": "Get Booking",
         "readOnlyHint": true,
@@ -255,6 +251,10 @@
           "booking_id": {
             "type": "string",
             "description": "Booking ID (e.g. stk_bk_xxxx) or confirmation number"
+          },
+          "verification_token": {
+            "type": "string",
+            "description": "Verification token returned by lookup_booking. Required for guest-facing (anonymous) lookups; obtain it by calling lookup_booking first. Not needed when authenticated with your own developer API key."
           }
         },
         "required": ["booking_id"]
@@ -262,7 +262,7 @@
     },
     {
       "name": "cancel_booking",
-      "description": "Cancel a hotel reservation. This action cannot be undone.\n\nRequires guest first name, last name, and hotel confirmation number.\n\nCancellation of non-refundable rates forfeits the full amount. The guest should be aware of the cancellation policy before this tool is called.\n\nTo change dates: the recommended pattern is to search and book new dates first, then cancel the original reservation. Canceling before securing a new booking risks losing the room.\n\nCancellation confirmation is emailed to the address on file.",
+      "description": "Cancel a hotel reservation. This is a two-step, server-confirmed action.\n\nCall 1 — provide guest first name, last name, and hotel confirmation number, and leave cancellation_token empty. The tool verifies the guest's identity and returns the cancellation terms (penalty, refundable amount, free-cancellation deadline, and a warning if the rate is non-refundable) plus a single-use cancellation_token. Nothing is cancelled yet.\n\nCall 2 — call again with the same details and the cancellation_token to execute the cancellation. The token is single-use and expires in about 10 minutes.\n\nShare the terms with the guest and get their confirmation before the second call. Non-refundable rates forfeit the full amount. Cancellation confirmation is emailed to the address on file.",
       "annotations": {
         "title": "Cancel Booking",
         "readOnlyHint": false,
@@ -284,6 +284,10 @@
           "confirmation_number": {
             "type": "string",
             "description": "Hotel confirmation number"
+          },
+          "cancellation_token": {
+            "type": "string",
+            "description": "Leave empty on the first call to preview the cancellation terms (penalty, refund, deadline) and receive a cancellation_token. Call again with that token to actually cancel. Single-use; expires in ~10 minutes."
           }
         },
         "required": ["first_name", "last_name", "confirmation_number"]
