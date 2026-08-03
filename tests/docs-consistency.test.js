@@ -204,6 +204,15 @@ describe('Documentation consistency', () => {
       );
     });
 
+    it('description satisfies the registry schema length bound (<= 100)', () => {
+      // ServerDetail.description in server.schema.json is maxLength: 100 — a
+      // longer value is rejected at registry publish time.
+      assert.ok(
+        manifest.description.length <= 100,
+        `server.json description is ${manifest.description.length} chars; the registry schema caps it at 100`
+      );
+    });
+
     it('declares an icon (the directory tile falls back to a generic globe without one)', () => {
       assert.ok(manifest.icons?.length > 0, 'server.json must declare at least one icon');
       for (const icon of manifest.icons) {
@@ -213,6 +222,14 @@ describe('Documentation consistency', () => {
             .includes(icon.mimeType),
           `icon mimeType ${icon.mimeType} is not allowed by the registry schema`
         );
+        // The registry schema's Icon.sizes is an array of "<w>x<h>" (or "any").
+        assert.ok(
+          Array.isArray(icon.sizes),
+          `icon sizes must be an array (e.g. ["512x512"]), got ${JSON.stringify(icon.sizes)}`
+        );
+        for (const size of icon.sizes) {
+          assert.match(size, /^(\d+x\d+|any)$/, `icon size "${size}" must match <w>x<h> or "any"`);
+        }
       }
     });
   });

@@ -31,7 +31,7 @@ jobs:
   # transient GDS/network blip should not turn a docs PR red.
   drift:
     name: Declared vs live server
-    if: github.event_name != 'pull_request'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
