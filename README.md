@@ -39,7 +39,7 @@ claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
 
 ### Try It Now
 
-**Playground:** [1stay.ai/playground](https://1stay.ai/playground) — test all 8 tools in your browser, no setup required.
+**Quickstart:** [1stay.ai/docs/quickstart](https://1stay.ai/docs/quickstart) — hotel booking for AI agents in three calls.
 
 **MCP Endpoint:** `https://mcp.stayker.com/mcp`
 **Protocol:** Streamable HTTP | MCP SDK v1.27.1 | Latest protocol version `2025-11-25`
