@@ -2,7 +2,7 @@
  * 1Stay MCP Server — Hotel Booking Infrastructure for AI
  *
  * Remote MCP server endpoint: https://mcp.stayker.com/mcp
- * Protocol: Streamable HTTP | OAuth 2.1
+ * Protocol: Streamable HTTP | authless (no OAuth)
  *
  * This package provides:
  * 1. A stdio-to-HTTP proxy (bin/cli.js) for MCP clients that don't support remote servers
