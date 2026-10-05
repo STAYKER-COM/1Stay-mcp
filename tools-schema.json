@@ -1,8 +1,8 @@
 {
   "server": {
     "name": "1Stay Hotels",
-    "version": "1.2.2",
-    "description": "1Stay — Hotel booking for AI conversations. Search 250,000+ properties worldwide across major brands (Marriott, Hilton, IHG, Hyatt, Wyndham, Best Western) and independent/boutique hotels. Get live rates, room details, and cancellation policies. Book with a secure checkout link — guest pays the hotel directly and receives the hotel's own confirmation number. Loyalty points apply to every booking. Displayed totals include taxes and any applicable, itemized 1Stay Booking Fee.",
+    "version": "1.1.0",
+    "description": "1Stay — Hotel booking for AI conversations. Search 250,000+ properties worldwide across major brands (Marriott, Hilton, IHG, Hyatt, Wyndham, Best Western, Choice) and independent/boutique hotels. Get live rates, room details, and cancellation policies. Book with a secure checkout link — guest pays the hotel directly and receives the hotel's own confirmation number. Loyalty points apply to every booking. Displayed totals include taxes and any applicable, itemized 1Stay Booking Fee.",
     "endpoint": "https://mcp.stayker.com/mcp",
     "transport": "streamable-http",
     "protocol_version": "2025-11-25",

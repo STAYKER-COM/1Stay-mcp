@@ -20,7 +20,7 @@ import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprot
 
 const REMOTE_URL = 'https://mcp.stayker.com/mcp';
 const SERVER_NAME = '1stay-hotel-booking';
-const SERVER_VERSION = '1.2.2';
+const SERVER_VERSION = '1.0.0';
 
 async function main() {
   // Connect to remote 1Stay server as an MCP client

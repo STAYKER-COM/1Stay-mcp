@@ -4,10 +4,11 @@ All notable changes to the 1Stay MCP server, API, and documentation will be docu
 
 ---
 
-## 1.2.2 — Unreleased
+## Unreleased
 
 Docs and schema aligned with the live server; no behavior change. The proxy
-(`bin/cli.js`) is unchanged apart from the version it reports.
+(`bin/cli.js`), package metadata and registry listing (`server.json`) are
+unchanged.
 
 - `tools-schema.json` now mirrors the live server's input schemas, descriptions
   and annotations (default client contract) for all eight tools:
@@ -32,15 +33,11 @@ Docs and schema aligned with the live server; no behavior change. The proxy
     four digits. An email address alone is not enough.
   - `resend_confirmation` also accepts the guest's full name and email for
     recovery when the confirmation number is unknown.
-  - The brand list in the server description no longer includes Choice.
 - README: the checkout link is valid for ~15 minutes (was "approximately 30
   minutes"); the endpoint is authless (no OAuth or 1Stay account needed);
   guest details are entered on the checkout page, not in conversation; tool
   table and examples updated to match the above.
-- Property count stated as 250,000+ everywhere (package description and README
-  said 300K+).
-- Versions aligned at 1.2.2 across `package.json`, `server.json`,
-  `tools-schema.json` and the proxy's reported server version.
+- Property count stated as 250,000+ in the README (was 300K+).
 
 ## 1.2.1 — 2026-07-31
 
