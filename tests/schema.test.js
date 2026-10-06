@@ -145,8 +145,8 @@ describe('tools-schema.json', () => {
       toolsByName = Object.fromEntries(schema.tools.map(t => [t.name, t]));
     });
 
-    it('cancel_booking is destructive', () => {
-      assert.equal(toolsByName['cancel_booking']?.annotations.destructiveHint, true, 'cancel_booking must be destructive');
+    it('cancel_booking is not destructive (it returns a cancellation link; the guest cancels on the secure page)', () => {
+      assert.equal(toolsByName['cancel_booking']?.annotations.destructiveHint, false, 'cancel_booking must not be destructive (live server: destructiveHint false)');
     });
 
     it('book_hotel is not destructive (creates, does not delete)', () => {
@@ -178,9 +178,15 @@ describe('tools-schema.json', () => {
       assert.ok('verification_token' in props, 'get_booking must declare verification_token');
     });
 
-    it('cancel_booking declares a cancellation_token param (two-step confirm)', () => {
-      const props = toolsByName['cancel_booking']?.inputSchema.properties || {};
-      assert.ok('cancellation_token' in props, 'cancel_booking must declare cancellation_token');
+    it('cancel_booking takes name + confirmation number only (no cancellation_token)', () => {
+      const props = Object.keys(toolsByName['cancel_booking']?.inputSchema.properties || {}).sort();
+      assert.deepEqual(props, ['confirmation_number', 'first_name', 'last_name'], 'cancel_booking inputs must match the live server');
+    });
+
+    it('get_booking takes a confirmation number, not a booking ID', () => {
+      const props = toolsByName['get_booking']?.inputSchema.properties || {};
+      assert.ok('confirmation_number' in props, 'get_booking must declare confirmation_number');
+      assert.ok(!('booking_id' in props), 'get_booking must not declare booking_id (internal IDs are not accepted)');
     });
 
     it('resend_confirmation does not declare updated_email (no recipient override)', () => {
@@ -192,17 +198,22 @@ describe('tools-schema.json', () => {
       assert.equal(toolsByName['retrieve_booking'], undefined, 'retrieve_booking must not exist');
     });
 
-    it('search_hotels requires location (matches live server contract)', () => {
+    it('search_hotels requires dates; location is optional when latitude/longitude are given (matches live server contract)', () => {
       const required = toolsByName['search_hotels']?.inputSchema.required || [];
-      assert.ok(required.includes('location'), 'search_hotels must require location (live server requires it)');
+      const props = toolsByName['search_hotels']?.inputSchema.properties || {};
+      assert.ok('location' in props, 'search_hotels must declare location');
+      assert.ok(!required.includes('location'), 'search_hotels must not require location (live server accepts latitude/longitude instead)');
+      assert.ok(!('chain_code' in props), 'search_hotels must not declare chain_code (not a live input)');
+      assert.equal(props.max_results?.maximum, 6, 'search_hotels max_results is capped at 6');
       assert.ok(required.includes('check_in'), 'search_hotels must require check_in');
       assert.ok(required.includes('check_out'), 'search_hotels must require check_out');
     });
 
-    it('book_hotel requires guest contact information', () => {
-      const required = toolsByName['book_hotel']?.inputSchema.required || [];
-      assert.ok(required.includes('guest_name'), 'book_hotel must require guest_name');
-      assert.ok(required.includes('guest_email'), 'book_hotel must require guest_email');
+    it('book_hotel accepts no guest identity or payment fields (collected on the checkout page)', () => {
+      const props = toolsByName['book_hotel']?.inputSchema.properties || {};
+      for (const field of ['guest_name', 'guest_email', 'guest_phone']) {
+        assert.ok(!(field in props), `book_hotel must not declare ${field}`);
+      }
     });
 
     it('book_hotel does not declare guest_phone (not accepted by live server)', () => {

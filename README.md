@@ -47,7 +47,7 @@ claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
 
 ## Features
 
-- **300,000+ properties** across 140+ countries — major chains, independents, boutiques
+- **250,000+ properties** across 140+ countries — major chains, independents, boutiques
 - **Real confirmation numbers** — not affiliate links, not redirects
 - **Loyalty program eligible** — Hilton, Marriott, IHG points accrue, elite status applies
 - **Stripe Connect monetization** — builders set their own booking fee and get paid directly
@@ -58,13 +58,13 @@ claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
 
 | Tool | Description | Annotations |
 |------|-------------|-------------|
-| `search_hotels` | Search hotels by location, dates, guests, and optional filters | `readOnlyHint: true` |
+| `search_hotels` | Search hotels by location and dates for one room (up to 6 results per page, paginated) | `readOnlyHint: true` |
 | `get_hotel_details` | Get room types, amenities, images, and live rates for a specific property | `readOnlyHint: true` |
-| `book_hotel` | Create a reservation and receive a secure checkout URL | `idempotentHint: true` |
-| `lookup_booking` | Look up a reservation with identity verification | `readOnlyHint: true` |
-| `resend_confirmation` | Resend confirmation email to guest | `openWorldHint: true` |
-| `get_booking` | Look up a reservation by booking ID or confirmation number | `readOnlyHint: true` |
-| `cancel_booking` | Cancel an existing reservation | `destructiveHint: true` |
+| `book_hotel` | Create a booking for one room and receive a secure checkout URL (no guest identity or payment fields) | `idempotentHint: true` |
+| `lookup_booking` | Look up a reservation by full name plus confirmation number, or booking email with card last four | `readOnlyHint: true` |
+| `resend_confirmation` | Resend the confirmation email to the address on file (by confirmation number, or full name and email) | `openWorldHint: true` |
+| `get_booking` | Look up a reservation by hotel confirmation number | `readOnlyHint: true` |
+| `cancel_booking` | Verify the guest and return a secure cancellation link — the guest completes the cancellation on that page | `idempotentHint: true` |
 | `search_tools` | List available 1Stay tools, optionally filtered by keyword | `readOnlyHint: true` |
 
 ## For Builders — Monetize with Stripe Connect
@@ -75,18 +75,18 @@ claude mcp add 1stay --transport http https://mcp.stayker.com/mcp
 
 ## Authentication
 
-1Stay uses OAuth 2.0 authorization code flow. When connecting through Claude, the OAuth handshake is handled automatically. You'll need a valid 1Stay account to authenticate.
+No sign-in is required. The hosted endpoint is authless — connect with the URL above and start searching. No 1Stay account or OAuth flow is needed. Developers with a 1Stay API key can send it as a Bearer token.
 
 ## How Booking Works
 
 1Stay uses a **secure link handoff** model for payment:
 
 1. **Search and select** happen inside the AI conversation
-2. **Guest details** (name, email) are collected in conversation to create the reservation
-3. **Payment** is completed on a secure, PCI-compliant checkout page — outside the AI layer
+2. **Checkout link** — the agent creates the booking with the selected rate and receives a secure checkout URL
+3. **Guest details and payment** (name, email, phone, card) are entered on a secure, PCI-compliant checkout page — outside the AI layer
 4. **Confirmation** is delivered via email with your hotel confirmation number
 
-Credit card and payment information never passes through the AI conversation. The checkout URL is valid for approximately 30 minutes.
+Guest identity and payment information never pass through the AI conversation. The checkout URL is valid for ~15 minutes — if it expires, fetch fresh rates and create a new checkout link.
 
 ## Examples
 
@@ -100,13 +100,13 @@ Credit card and payment information never passes through the AI conversation. Th
 
 **User prompt:** "Show me room options, then book the king room."
 
-1Stay retrieves live room types, rates, and cancellation policies. Provide guest name and email — 1Stay creates the reservation and returns a secure checkout URL.
+1Stay retrieves live room types, rates, and cancellation policies, then returns a secure checkout URL for the selected room. The guest enters their details and payment on that page.
 
 ### Look up and manage a reservation
 
-**User prompt:** "I need to look up my reservation — Amy Barker, amy@stayker.com"
+**User prompt:** "I need to look up my reservation — Jane Smith, confirmation number 83920471"
 
-1Stay verifies your identity and returns the confirmation number and booking summary in conversation. Ask to resend the confirmation email or cancel directly in conversation.
+1Stay verifies your identity — full name plus your hotel confirmation number, or your booking email together with the last four digits of the card used to book — and returns the confirmation number and booking summary in conversation. Ask to resend the confirmation email, or ask to cancel and 1Stay returns a secure link where you review the terms and complete the cancellation.
 
 ## Coming Soon
 
